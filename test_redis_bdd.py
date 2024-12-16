@@ -103,3 +103,4 @@ def run_redis_benchmark():
 @then('the results should show the performance metrics')
 def check_redis_benchmark_results():
     assert True
+
