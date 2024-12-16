@@ -12,28 +12,37 @@ jobs:
           - 6379:6379
     steps:
       - uses: actions/checkout@v2
+      
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.8'
+      
       - name: Install dependencies
         run: |
           pip install pytest pytest-bdd redis python-dotenv
+      
       - name: Set environment variables
         run: |
-          echo "REDIS_SERVER_PATH=$(which redis-server)" >> $GITHUB_ENV
-          echo "REDIS_CLI_PATH=$(which redis-cli)" >> $GITHUB_ENV
-          echo "REDIS_BENCHMARK_PATH=$(which redis-benchmark)" >> $GITHUB_ENV
+          export REDIS_SERVER_PATH=./Redis-x64-3.0.504/redis-server
+          export REDIS_CLI_PATH=./Redis-x64-3.0.504/redis-cli
+          export REDIS_BENCHMARK_PATH=./Redis-x64-3.0.504/redis-benchmark
+          echo "REDIS_SERVER_PATH=$REDIS_SERVER_PATH" >> $GITHUB_ENV
+          echo "REDIS_CLI_PATH=$REDIS_CLI_PATH" >> $GITHUB_ENV
+          echo "REDIS_BENCHMARK_PATH=$REDIS_BENCHMARK_PATH" >> $GITHUB_ENV
+      
       - name: Verify environment variables
         run: |
           echo "REDIS_SERVER_PATH=$REDIS_SERVER_PATH"
           echo "REDIS_CLI_PATH=$REDIS_CLI_PATH"
           echo "REDIS_BENCHMARK_PATH=$REDIS_BENCHMARK_PATH"
+      
       - name: Make Redis executables executable
         run: |
           chmod +x $REDIS_SERVER_PATH
           chmod +x $REDIS_CLI_PATH
           chmod +x $REDIS_BENCHMARK_PATH
+      
       - name: Run tests
         run: |
           pytest test_redis_bdd.py
