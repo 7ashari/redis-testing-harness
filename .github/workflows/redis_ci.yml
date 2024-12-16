@@ -19,16 +19,21 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pytest pytest-bdd redis python-dotenv
-      - name: Make Redis executables executable
-        run: |
-          chmod +x $REDIS_SERVER_PATH
-          chmod +x $REDIS_CLI_PATH
-          chmod +x $REDIS_BENCHMARK_PATH
       - name: Set environment variables
         run: |
           echo "REDIS_SERVER_PATH=$(which redis-server)" >> $GITHUB_ENV
           echo "REDIS_CLI_PATH=$(which redis-cli)" >> $GITHUB_ENV
           echo "REDIS_BENCHMARK_PATH=$(which redis-benchmark)" >> $GITHUB_ENV
+      - name: Verify environment variables
+        run: |
+          echo "REDIS_SERVER_PATH=$REDIS_SERVER_PATH"
+          echo "REDIS_CLI_PATH=$REDIS_CLI_PATH"
+          echo "REDIS_BENCHMARK_PATH=$REDIS_BENCHMARK_PATH"
+      - name: Make Redis executables executable
+        run: |
+          chmod +x $REDIS_SERVER_PATH
+          chmod +x $REDIS_CLI_PATH
+          chmod +x $REDIS_BENCHMARK_PATH
       - name: Run tests
         run: |
           pytest test_redis_bdd.py
