@@ -7,27 +7,28 @@ jobs:
     runs-on: ubuntu-latest
     services:
       redis:
-        image: redis:latest
+        image: redis
         ports:
           - 6379:6379
+
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-      
+      - uses: actions/checkout@v2
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: '3.8'
-      
+
       - name: Install dependencies
-        run: pip install -r requirements.txt
-      
-      - name: Install Redis Tools
-        run: sudo apt-get update && sudo apt-get install -y redis-tools
-      
-      - name: Verify Redis Tools Installation
         run: |
-          redis-cli --version
-      
+          pip install pytest pytest-bdd redis python-dotenv
+
+      - name: Load environment variables
+        run: |
+          echo "REDIS_SERVER_PATH=/usr/bin/redis-server" >> $GITHUB_ENV
+          echo "REDIS_CLI_PATH=/usr/bin/redis-cli" >> $GITHUB_ENV
+          echo "REDIS_BENCHMARK_PATH=/usr/bin/redis-benchmark" >> $GITHUB_ENV
+
       - name: Run tests
-        run: pytest -v --disable-warnings
+        run: |
+          pytest

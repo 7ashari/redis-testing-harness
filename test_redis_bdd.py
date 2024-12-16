@@ -6,13 +6,18 @@ import subprocess
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # Load environment variables from .env file
+# Load environment variables from .env file
+load_dotenv()
 
 scenarios('features/redis.feature')
 
-REDIS_SERVER_PATH = os.getenv('REDIS_SERVER_PATH', 'redis-server')
-REDIS_CLI_PATH = os.getenv('REDIS_CLI_PATH', 'redis-cli')
-REDIS_BENCHMARK_PATH = os.getenv('REDIS_BENCHMARK_PATH', 'redis-benchmark')
+redis_server_path = os.getenv('REDIS_SERVER_PATH')
+redis_cli_path = os.getenv('REDIS_CLI_PATH')
+redis_benchmark_path = os.getenv('REDIS_BENCHMARK_PATH')
+
+print(redis_server_path)
+print(redis_cli_path)
+print(redis_benchmark_path)
 
 @pytest.fixture
 def redis_client():
@@ -39,9 +44,9 @@ def set_language_key(redis_client):
 
 @when('I restart the Redis server')
 def restart_redis():
-    subprocess.run([REDIS_CLI_PATH, "SHUTDOWN"], check=True)
+    subprocess.run([redis_cli_path, "SHUTDOWN"], check=True)
     time.sleep(2)  # Wait for Redis to shutdown
-    subprocess.run([REDIS_SERVER_PATH, "--daemonize", "yes"], check=True)
+    subprocess.run([redis_server_path, "--daemonize", "yes"], check=True)
     time.sleep(2)  # Wait for Redis to restart
 
 @then('I should be able to get the value "python" for the key "language"')
@@ -53,17 +58,19 @@ def get_language_key(redis_client):
 def redis_with_replica():
     master_client = redis.Redis(host='localhost', port=6379)
     replica_client = redis.Redis(host='localhost', port=6380)
-    pass
+    assert master_client.ping(), "Master server connection failed"
+    assert replica_client.ping(), "Replica server connection failed"
 
 @when('the master node fails')
 def fail_master():
-    subprocess.run([REDIS_CLI_PATH, "-p", "6379", "SHUTDOWN"], check=True)
+    subprocess.run([redis_cli_path, "-p", "6379", "SHUTDOWN"], check=True)
     time.sleep(2)  # Allow some time for failover
 
 @then('the replica should take over as the master')
 def replica_takeover():
     replica_client = redis.Redis(host='localhost', port=6380)
-    assert replica_client.info()['role'] == 'master'
+    time.sleep(5)  # Allow time for the replica to take over
+    assert replica_client.info()['role'] == 'master', "Replica did not take over as master"
 
 @when('I set a key "session" with value "active" and expiration of 5 seconds')
 def set_key_with_expiration(redis_client):
@@ -98,9 +105,8 @@ def get_lua_script_key(redis_client):
 
 @when('I run the redis-benchmark tool')
 def run_redis_benchmark():
-    subprocess.run([REDIS_BENCHMARK_PATH], check=True)
+    subprocess.run([redis_benchmark_path], check=True)
 
 @then('the results should show the performance metrics')
 def check_redis_benchmark_results():
     assert True
-
