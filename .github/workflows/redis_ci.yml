@@ -1,0 +1,29 @@
+name: Redis Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Install dependencies
+        run: |
+          pip install pytest pytest-bdd redis python-dotenv
+      - name: Set environment variables
+        run: |
+          echo "REDIS_SERVER_PATH=$(which redis-server)" >> $GITHUB_ENV
+          echo "REDIS_CLI_PATH=$(which redis-cli)" >> $GITHUB_ENV
+          echo "REDIS_BENCHMARK_PATH=$(which redis-benchmark)" >> $GITHUB_ENV
+      - name: Run tests
+        run: |
+          pytest test_redis_bdd.py
