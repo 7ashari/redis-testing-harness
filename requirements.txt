@@ -1,3 +1,4 @@
 pytest
 pytest-bdd
 redis
+python-dotenv

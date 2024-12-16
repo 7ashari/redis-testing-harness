@@ -20,8 +20,10 @@ jobs:
           python-version: '3.8'
       
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
+      
+      - name: Clean Python cache
+        run: find . -name "*.pyc" -delete
       
       - name: Run tests
         run: pytest -v --disable-warnings
