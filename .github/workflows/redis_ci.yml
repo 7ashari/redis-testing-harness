@@ -19,8 +19,12 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y redis-server python3-pip
+        sudo apt-get install -y software-properties-common
+        sudo add-apt-repository ppa:redislabs/redis
+        sudo apt-get update
+        sudo apt-get install -y redis-server=7.4.1
         python3 -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install pytest==7.4.4 pytest-bdd==8.1.0 python-dotenv==1.0.1 redis==5.2.1
 
     - name: Clear Redis data directory
       run: sudo rm -rf /var/lib/redis/*
