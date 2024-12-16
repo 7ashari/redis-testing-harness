@@ -19,6 +19,11 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pytest pytest-bdd redis python-dotenv
+      - name: Make Redis executables executable
+        run: |
+          chmod +x $REDIS_SERVER_PATH
+          chmod +x $REDIS_CLI_PATH
+          chmod +x $REDIS_BENCHMARK_PATH
       - name: Set environment variables
         run: |
           echo "REDIS_SERVER_PATH=$(which redis-server)" >> $GITHUB_ENV
