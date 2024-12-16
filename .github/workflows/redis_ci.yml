@@ -22,8 +22,14 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       
-      - name: Clean Python cache
-        run: find . -name "*.pyc" -delete
+      - name: Install Redis Tools
+        run: sudo apt-get update && sudo apt-get install -y redis-tools
+      
+      - name: Verify Redis Tools Installation
+        run: |
+          redis-cli --version
+          redis-benchmark --version
+          redis-server --version
       
       - name: Run tests
         run: pytest -v --disable-warnings
