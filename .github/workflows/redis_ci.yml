@@ -34,6 +34,7 @@ jobs:
         echo 'port 6380' > replica.conf
         echo 'replicaof 127.0.0.1 6379' >> replica.conf
         sudo redis-server replica.conf --daemonize yes
+        sleep 5  # Add a delay to ensure the server starts
 
     - name: Verify Redis replica server
       run: redis-cli -p 6380 ping
