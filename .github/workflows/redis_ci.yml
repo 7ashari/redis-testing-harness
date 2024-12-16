@@ -24,25 +24,30 @@ jobs:
 
     - name: Start Redis master server
       run: |
+        sudo rm -rf /var/lib/redis/*  # Clear existing data to avoid compatibility issues
         sudo redis-server --port 6379 --daemonize yes
         sleep 5  # Ensure master server has time to start
 
     - name: Verify Redis master server
       run: redis-cli -p 6379 ping
 
-    - name: Start Redis replica server (foreground)
+    - name: Start Redis replica server
       run: |
         echo 'port 6380' > replica.conf
         echo 'replicaof 127.0.0.1 6379' >> replica.conf
         cat replica.conf  # Log the configuration for verification
-        sudo redis-server replica.conf &
+        sudo rm -rf /var/lib/redis/*  # Clear existing data to avoid compatibility issues
+        sudo redis-server replica.conf --daemonize yes
         sleep 15  # Ensure replica has enough time to start
 
     - name: Verify Redis replica server
       run: redis-cli -p 6380 ping
 
-    - name: Output Redis logs
+    - name: Output Redis logs for master
       run: sudo cat /var/log/redis/redis-server.log
+
+    - name: Output Redis logs for replica
+      run: sudo cat /var/log/redis/redis-server.log  
 
     - name: Run tests
       env:
