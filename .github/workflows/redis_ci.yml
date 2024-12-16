@@ -24,8 +24,7 @@ jobs:
 
     - name: Start Redis master server
       run: |
-        sudo rm -rf /var/lib/redis/*  # Clear existing data to avoid compatibility issues
-        sudo redis-server --port 6379 --daemonize yes
+        sudo redis-server --port 6379 --loglevel debug 2>&1 | tee master.log &
         sleep 5  # Ensure master server has time to start
 
     - name: Verify Redis master server
@@ -36,24 +35,17 @@ jobs:
         echo 'port 6380' > replica.conf
         echo 'replicaof 127.0.0.1 6379' >> replica.conf
         cat replica.conf  # Log the configuration for verification
-        sudo rm -rf /var/lib/redis/*  # Clear existing data to avoid compatibility issues
-        sudo redis-server replica.conf --loglevel debug > replica.log 2>&1 &  # Run in foreground with detailed logging
+        sudo redis-server replica.conf --loglevel debug 2>&1 | tee replica.log &
         sleep 15  # Ensure replica has enough time to start
 
     - name: Verify Redis replica server
       run: redis-cli -p 6380 ping
 
     - name: Output Redis master logs
-      run: sudo cat /var/log/redis/redis-server.log
+      run: cat master.log
 
     - name: Output Redis replica logs
-      run: cat replica.log  # Log output from foreground process
+      run: cat replica.log
 
     - name: Run tests
-      env:
-        REDIS_SERVER_PATH: "/usr/bin/redis-server"
-        REDIS_CLI_PATH: "/usr/bin/redis-cli"
-        REDIS_BENCHMARK_PATH: "/usr/bin/redis-benchmark"
-      run: |
-        source venv/bin/activate
-        pytest test_redis_bdd.py
+      run: pytest test_redis_bdd.py
