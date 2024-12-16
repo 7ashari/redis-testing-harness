@@ -24,9 +24,9 @@ jobs:
       
       - name: Set environment variables
         run: |
-          export REDIS_SERVER_PATH=./Redis-x64-3.0.504/redis-server
-          export REDIS_CLI_PATH=./Redis-x64-3.0.504/redis-cli
-          export REDIS_BENCHMARK_PATH=./Redis-x64-3.0.504/redis-benchmark
+          export REDIS_SERVER_PATH=$GITHUB_WORKSPACE/Redis-x64-3.0.504/redis-server
+          export REDIS_CLI_PATH=$GITHUB_WORKSPACE/Redis-x64-3.0.504/redis-cli
+          export REDIS_BENCHMARK_PATH=$GITHUB_WORKSPACE/Redis-x64-3.0.504/redis-benchmark
           echo "REDIS_SERVER_PATH=$REDIS_SERVER_PATH" >> $GITHUB_ENV
           echo "REDIS_CLI_PATH=$REDIS_CLI_PATH" >> $GITHUB_ENV
           echo "REDIS_BENCHMARK_PATH=$REDIS_BENCHMARK_PATH" >> $GITHUB_ENV
