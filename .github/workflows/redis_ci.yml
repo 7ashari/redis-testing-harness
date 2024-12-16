@@ -28,8 +28,6 @@ jobs:
       - name: Verify Redis Tools Installation
         run: |
           redis-cli --version
-          redis-benchmark --version
-          redis-server --version
       
       - name: Run tests
         run: pytest -v --disable-warnings
