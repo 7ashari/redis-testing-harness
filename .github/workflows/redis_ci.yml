@@ -17,11 +17,10 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
+        sudo apt-get update
+        sudo apt-get install -y redis-server python3-pip
+        python3 -m pip install --upgrade pip
         pip install -r requirements.txt
-
-    - name: Install Redis
-      run: sudo apt-get install -y redis-server
 
     - name: Start Redis master server
       run: sudo redis-server --port 6379 --daemonize yes
@@ -34,13 +33,16 @@ jobs:
         echo 'port 6380' > replica.conf
         echo 'replicaof 127.0.0.1 6379' >> replica.conf
         sudo redis-server replica.conf --daemonize yes
-        sleep 5  # Add a delay to ensure the server starts
+        sleep 15 
 
     - name: Verify Redis replica server
       run: redis-cli -p 6380 ping
 
-    - name: Output Redis logs
-      run: sudo tail -n 50 /var/log/redis/redis-server.log
+    - name: Output Redis logs for master
+      run: sudo tail -n 100 /var/log/redis/redis-server.log
+
+    - name: Output Redis logs for replica
+      run: sudo tail -n 100 /var/log/redis/redis-server.log  
 
     - name: Run tests
       env:
