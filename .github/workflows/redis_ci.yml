@@ -1,39 +1,3 @@
-# name: Redis Tests
-
-# on: [push, pull_request]
-
-# jobs:
-#   test:
-#     runs-on: ubuntu-latest
-#     services:
-#       redis:
-#         image: redis
-#         ports:
-#           - 6379:6379
-
-#     steps:
-#       - uses: actions/checkout@v2
-
-#       - name: Set up Python
-#         uses: actions/setup-python@v2
-#         with:
-#           python-version: '3.8'
-
-#       - name: Install dependencies
-#         run: |
-#           pip install pytest pytest-bdd redis python-dotenv
-
-#       - name: Load environment variables
-#         run: |
-#           echo "REDIS_SERVER_PATH=/usr/bin/redis-server" >> $GITHUB_ENV
-#           echo "REDIS_CLI_PATH=/usr/bin/redis-cli" >> $GITHUB_ENV
-#           echo "REDIS_BENCHMARK_PATH=/usr/bin/redis-benchmark" >> $GITHUB_ENV
-
-#       - name: Run tests
-#         run: |
-#           pytest
-
-
 name: CI Pipeline
 
 on: [push, pull_request]
@@ -58,6 +22,9 @@ jobs:
 
     - name: Install Redis
       run: sudo apt-get install -y redis-server
+
+    - name: Start Redis server
+      run: sudo systemctl start redis-server
 
     - name: Verify Redis CLI Path
       run: which redis-cli
