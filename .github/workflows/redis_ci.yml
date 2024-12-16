@@ -33,11 +33,16 @@ jobs:
     - name: Verify Redis master server
       run: redis-cli -p 6379 ping
 
-    - name: Start Redis replica server
+    - name: Create and set permissions for replica.conf
       run: |
         echo 'port 6380' > replica.conf
         echo 'replicaof 127.0.0.1 6379' >> replica.conf
+        sudo chmod 644 replica.conf
+        sudo chown redis:redis replica.conf
         cat replica.conf  # Log the configuration for verification
+
+    - name: Start Redis replica server
+      run: |
         sudo redis-server replica.conf --loglevel debug 2>&1 | tee replica.log &
         sleep 15  # Ensure replica has enough time to start
 
