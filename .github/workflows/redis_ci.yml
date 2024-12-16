@@ -17,11 +17,15 @@ jobs:
 
     - name: Install dependencies
       run: |
-        echo 'deb http://download.redis.io/deb/ubuntu $(lsb_release -cs)-release' | sudo tee /etc/apt/sources.list.d/redis.list
         sudo apt-get update
-        sudo apt-get install -y redis-server python3-pip
+        sudo apt-get install -y redis-server python3-pip python3-pytest python3-pytest-bdd python3-dotenv python3-redis
         python3 -m pip install --upgrade pip
-        pip install pytest==7.4.4 pytest-bdd==8.1.0 python-dotenv==1.0.1 redis==5.2.1
+
+    - name: Configure firewall rules
+      run: |
+        sudo ufw allow 6379
+        sudo ufw allow 6380
+        sudo ufw reload
 
     - name: Clear Redis data directory
       run: sudo rm -rf /var/lib/redis/*
