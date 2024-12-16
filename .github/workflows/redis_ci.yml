@@ -7,11 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     services:
       redis:
-        image: redis
+        image: redis:latest
         ports:
           - 6379:6379
     steps:
-      - uses: actions/checkout@v2
+      - name: Check out code
+        uses: actions/checkout@v2
       
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -20,29 +21,7 @@ jobs:
       
       - name: Install dependencies
         run: |
-          pip install pytest pytest-bdd redis python-dotenv
-      
-      - name: Set environment variables
-        run: |
-          export REDIS_SERVER_PATH=$GITHUB_WORKSPACE/Redis-x64-3.0.504/redis-server
-          export REDIS_CLI_PATH=$GITHUB_WORKSPACE/Redis-x64-3.0.504/redis-cli
-          export REDIS_BENCHMARK_PATH=$GITHUB_WORKSPACE/Redis-x64-3.0.504/redis-benchmark
-          echo "REDIS_SERVER_PATH=$REDIS_SERVER_PATH" >> $GITHUB_ENV
-          echo "REDIS_CLI_PATH=$REDIS_CLI_PATH" >> $GITHUB_ENV
-          echo "REDIS_BENCHMARK_PATH=$REDIS_BENCHMARK_PATH" >> $GITHUB_ENV
-      
-      - name: Verify environment variables
-        run: |
-          echo "REDIS_SERVER_PATH=$REDIS_SERVER_PATH"
-          echo "REDIS_CLI_PATH=$REDIS_CLI_PATH"
-          echo "REDIS_BENCHMARK_PATH=$REDIS_BENCHMARK_PATH"
-      
-      - name: Make Redis executables executable
-        run: |
-          chmod +x $REDIS_SERVER_PATH
-          chmod +x $REDIS_CLI_PATH
-          chmod +x $REDIS_BENCHMARK_PATH
+          pip install -r requirements.txt
       
       - name: Run tests
-        run: |
-          pytest test_redis_bdd.py
+        run: pytest -v --disable-warnings
