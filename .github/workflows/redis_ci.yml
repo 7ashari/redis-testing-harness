@@ -37,17 +37,17 @@ jobs:
         echo 'replicaof 127.0.0.1 6379' >> replica.conf
         cat replica.conf  # Log the configuration for verification
         sudo rm -rf /var/lib/redis/*  # Clear existing data to avoid compatibility issues
-        sudo redis-server replica.conf --daemonize yes
+        sudo redis-server replica.conf --loglevel debug > replica.log 2>&1 &  # Run in foreground with detailed logging
         sleep 15  # Ensure replica has enough time to start
 
     - name: Verify Redis replica server
       run: redis-cli -p 6380 ping
 
-    - name: Output Redis logs for master
+    - name: Output Redis master logs
       run: sudo cat /var/log/redis/redis-server.log
 
-    - name: Output Redis logs for replica
-      run: sudo cat /var/log/redis/redis-server.log  
+    - name: Output Redis replica logs
+      run: cat replica.log  # Log output from foreground process
 
     - name: Run tests
       env:
