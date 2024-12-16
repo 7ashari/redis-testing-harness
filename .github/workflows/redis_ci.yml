@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: Redis CI Pipeline
 
 on: [push, pull_request]
 
@@ -23,8 +23,14 @@ jobs:
     - name: Install Redis
       run: sudo apt-get install -y redis-server
 
-    - name: Start Redis server
-      run: sudo systemctl start redis-server
+    - name: Start Redis master server
+      run: sudo redis-server --port 6379 --daemonize yes
+
+    - name: Start Redis replica server
+      run: |
+        echo 'port 6380' > replica.conf
+        echo 'replicaof 127.0.0.1 6379' >> replica.conf
+        sudo redis-server replica.conf --daemonize yes
 
     - name: Verify Redis CLI Path
       run: which redis-cli
